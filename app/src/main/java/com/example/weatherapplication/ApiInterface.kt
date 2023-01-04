@@ -8,9 +8,7 @@ import retrofit2.http.Query
 interface ApiInterface {
 
    // @GET("/v1/forecast?latitude=52.52&longitude=13.41&current_weather=true")
-    @GET("/v1/forecast?latitude={latitude}&longitude={longitude}&current_weather=true")
-
-    suspend fun getWeather(@Path("latitude") latitude:String,@Path("longitude") longitude:String): Response<Data>
-
+    @GET("/v1/forecast?")
+    suspend fun getWeather(@Query("latitude") latitude:String,@Query("longitude") longitude:String, @Query("current_weather") current_weather:Boolean ): Response<Data>
 
 }
