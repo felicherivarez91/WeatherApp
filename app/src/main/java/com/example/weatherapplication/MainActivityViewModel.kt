@@ -1,39 +1,49 @@
 package com.example.weatherapplication
 
 import android.util.Log
-import android.widget.Toast
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.weatherapplication.model.Data
+import com.example.weatherapplication.retrofit.ApiInterface
+import com.example.weatherapplication.retrofit.RetrofitClient
+import kotlinx.coroutines.launch
 
 class MainActivityViewModel :ViewModel() {
-    lateinit var weatherData : Data
+    private val _weatherData = MutableLiveData<Data>()
+    val weatherData: LiveData<Data>
+        get() = _weatherData
     var latitude : String = ""
     var longitude : String = ""
-    var viewModelStore by viewModelScope()
-    private fun getWeather(latitude: String, longitude: String): Data {
+
+
+    fun getWeatherData(latitude: String, longitude: String){
 
         var retrofit = RetrofitClient().getClient()
         var apiInterface = retrofit.create(ApiInterface::class.java)
-         viewModelScope {
+         viewModelScope.launch {
         try {
 
             val response = apiInterface.getWeather(latitude,longitude,true)
-//            if (response.isSuccessful()) {
+            if (response.isSuccessful()) {
                 //your code for handling success response
-                weatherData = response.body()!!
-//            } else {
-//                Toast.makeText(
-//                    this@MainActivityViewModel,
-//                    response.errorBody().toString(),
-//                    Toast.LENGTH_LONG
-//                ).show()
-//            }
+
+                _weatherData.value = response.body()!!
+            } else {
+               // Toast.makeText(
+                //    this@MainActivityViewModel,
+                //    response.errorBody().toString(),
+                //    Toast.LENGTH_LONG
+               // ).show()
+                Log.e("ERROR fetching data","Could not fetch weather data")
+            }
         }catch (Ex:Exception){
             Log.e("Error",Ex.localizedMessage)
         }
          }
-        return weatherData
     }
+
 
 
 
