@@ -2,13 +2,13 @@
     <string name="app_name">WeatherApplication</string>
     <string name="Title">Weather Details:</string>
     <string name="LatitudeTitle">"Latitude: "</string>
-    <string name="Latitude"> Latitude value</string>
-    <string name="LongitudeTitle">Longitude</string>
-    <string name="Longitude">longitude value</string>
+    <string name="Latitude"></string>
+    <string name="LongitudeTitle">Longitude: </string>
+    <string name="Longitude"></string>
     <string name="TemperatureTitle">"Temperature: "</string>
-    <string name="Temperature">Temperature value</string>
+    <string name="Temperature"></string>
     <string name="WindspeedTitle">"Wind Speed: "</string>
-    <string name="Windspeed">windspeed value</string>
+    <string name="Windspeed"></string>
     <string name="WindDirectionTitle">"Wind Direction: "</string>
-    <string name="WindDirection">Wind Direction Value</string>
+    <string name="WindDirection"></string>
 </resources>

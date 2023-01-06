@@ -11,38 +11,36 @@ import com.example.weatherapplication.retrofit.RetrofitClient
 import kotlinx.coroutines.launch
 
 class MainActivityViewModel :ViewModel() {
-    private val _weatherData = MutableLiveData<Data>()
+    val _weatherData = MutableLiveData<Data>()
     val weatherData: LiveData<Data>
         get() = _weatherData
     var latitude : String = ""
     var longitude : String = ""
 
 
+
     fun getWeatherData(latitude: String, longitude: String){
 
-        var retrofit = RetrofitClient().getClient()
-        var apiInterface = retrofit.create(ApiInterface::class.java)
+        val retrofit = RetrofitClient().getClient()
+        val apiInterface = retrofit.create(ApiInterface::class.java)
          viewModelScope.launch {
         try {
 
             val response = apiInterface.getWeather(latitude,longitude,true)
-            if (response.isSuccessful()) {
+            if (response.isSuccessful) {
                 //your code for handling success response
 
                 _weatherData.value = response.body()!!
             } else {
-               // Toast.makeText(
-                //    this@MainActivityViewModel,
-                //    response.errorBody().toString(),
-                //    Toast.LENGTH_LONG
-               // ).show()
+
                 Log.e("ERROR fetching data","Could not fetch weather data")
             }
         }catch (Ex:Exception){
-            Log.e("Error",Ex.localizedMessage)
+            Log.e("Error", Ex.localizedMessage!!)
         }
          }
     }
+
 
 
 
