@@ -11,4 +11,8 @@
     <string name="Windspeed"></string>
     <string name="WindDirectionTitle">"Wind Direction: "</string>
     <string name="WindDirection"></string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="latitudeInput" />
+    <string name="longitudeInput" />
 </resources>

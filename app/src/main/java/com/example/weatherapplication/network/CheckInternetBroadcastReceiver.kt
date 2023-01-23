@@ -25,12 +25,12 @@ class CheckInternetBroadcastReceiver : BroadcastReceiver() {
             Toast.makeText(context, "There is internet", Toast.LENGTH_LONG).show();
            // image.setImageResource(R.drawable.internet)
             // retrieves the data
-            main.viewModel.getWeatherData(main.viewModel.latitude, main.viewModel.longitude)
+     /*       main.viewModel.getWeatherData(main.viewModel.latitude, main.viewModel.longitude)
             //saves data to database
      //       main.addRecord(main.weatherDao)
             // sets the ui
             main.setupUI()
-
+*/
 
         }else{
             Toast.makeText(context, "There is no internet", Toast.LENGTH_LONG).show();
