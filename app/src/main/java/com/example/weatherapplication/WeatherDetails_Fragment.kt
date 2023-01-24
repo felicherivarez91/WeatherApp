@@ -11,21 +11,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import com.example.weatherapplication.databinding.FragmentHomeBinding
 import com.example.weatherapplication.databinding.FragmentWeatherDetailsBinding
 import com.example.weatherapplication.model.CurrentWeather
 import com.example.weatherapplication.model.Data
 import kotlinx.coroutines.launch
 
 class WeatherDetails_Fragment : Fragment() {
-    var binding: FragmentWeatherDetailsBinding? = null
-    lateinit var viewModel: MainActivityViewModel
-    lateinit var weatherDao : WeatherDao
-    var status = false
-
+    private var binding: FragmentWeatherDetailsBinding? = null
+    private lateinit var viewModel: MainActivityViewModel
+    private lateinit var weatherDao : WeatherDao
+    private var status = false
+    var latitude : String? = null
+    var longitude : String? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -38,9 +37,15 @@ class WeatherDetails_Fragment : Fragment() {
         //viewmodel
         viewModel = ViewModelProvider(this).get(MainActivityViewModel::class.java)
 
-        // will be changed to have the user enter the values or current location
-        viewModel.latitude = "30"
-        viewModel.longitude = "80"
+        // get arguments latitude and longitude from current location
+         latitude = arguments?.getString("latitude").toString()
+         longitude = arguments?.getString("longitude").toString()
+
+        if (latitude != null && longitude != null) {
+            viewModel.latitude = latitude as String
+            viewModel.longitude = longitude as String
+        }
+
 
         // internet network receiver
         // internetReceiver = CheckInternetBroadcastReceiver()
@@ -72,7 +77,7 @@ class WeatherDetails_Fragment : Fragment() {
     }
 
     // adds the weather result to database
-    fun addRecord(weatherDao: WeatherDao) {
+    private fun addRecord(weatherDao: WeatherDao) {
 
         val latitude = binding?.tvLatitude?.text.toString().toDoubleOrNull()
         val longitude = binding?.tvLongitude?.text.toString().toDoubleOrNull()
@@ -105,7 +110,7 @@ class WeatherDetails_Fragment : Fragment() {
     }
 
 
-    fun setUpUIFromDatabase(weatherDao: WeatherDao) {
+    private fun setUpUIFromDatabase(weatherDao: WeatherDao) {
         lifecycleScope.launch{
             weatherDao.getLast().collect{
                 val lastRecord = it
@@ -126,7 +131,7 @@ class WeatherDetails_Fragment : Fragment() {
         }
     }
 
-    fun setupUI(){
+    private fun setupUI(){
         viewModel.weatherData.observe(viewLifecycleOwner) { weatherData ->
             binding?.tvLatitude?.text = weatherData.latitude.toString()
             binding?.tvLongitude?.text = weatherData.longitude.toString()
@@ -140,15 +145,15 @@ class WeatherDetails_Fragment : Fragment() {
 
     }
 
-    private fun checkInternet() {
+   // private fun checkInternet() {
         //   registerReceiver(internetReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
-    }
+   // }
 
 
-    override fun onPause() {
-        super.onPause()
+   // override fun onPause() {
+   //     super.onPause()
         //    unregisterReceiver(internetReceiver)
-    }
+  //  }
 
     // checks if internet is connected
     private fun isOnline(): Boolean {
