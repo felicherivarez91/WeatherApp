@@ -141,7 +141,7 @@ class Home_Fragment : Fragment(){
             }
         }else{
             requestPermission()
-            getLastLocation()
+          //  getLastLocation()
 
         }
     }

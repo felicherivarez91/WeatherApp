@@ -60,8 +60,6 @@ class WeatherDetails_Fragment : Fragment() {
             // sets the ui
             setupUI()
 
-            //saves data to database
-            //       addRecord(weatherDao)
 
         }else{
             //if no internet -> display the last data from room database
