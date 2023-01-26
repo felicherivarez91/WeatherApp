@@ -17,9 +17,7 @@ class MainActivityViewModel :ViewModel() {
     var latitude : String = ""
     var longitude : String = ""
 
-
-
-    fun getWeatherData(latitude: String, longitude: String){
+    fun getWeatherData(latitude: String, longitude: String,location: String){
 
         val retrofit = RetrofitClient().getClient()
         val apiInterface = retrofit.create(ApiInterface::class.java)
@@ -31,6 +29,8 @@ class MainActivityViewModel :ViewModel() {
                 //your code for handling success response
 
                 _weatherData.value = response.body()!!
+                // initialize location in weatherdata
+                _weatherData.value?.location = location
             } else {
 
                 Log.e("ERROR fetching data","Could not fetch weather data")
@@ -40,6 +40,8 @@ class MainActivityViewModel :ViewModel() {
         }
          }
     }
+
+
 
 
 

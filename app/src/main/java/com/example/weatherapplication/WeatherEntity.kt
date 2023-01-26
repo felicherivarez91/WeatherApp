@@ -13,5 +13,6 @@ data class WeatherEntity(
     val longitude: Double,
     val temperature: Double,
     val windspeed: Double,
-    val winddirection: Int
+    val winddirection: Int,
+    val location: String
 )

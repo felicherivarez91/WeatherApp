@@ -15,4 +15,6 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="latitudeInput" />
     <string name="longitudeInput" />
+    <string name="LocationTitle">Location</string>
+    <string name="Location" />
 </resources>
