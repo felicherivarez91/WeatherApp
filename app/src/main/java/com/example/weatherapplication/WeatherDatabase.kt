@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import kotlinx.coroutines.InternalCoroutinesApi
 
 
-@Database(entities = [WeatherEntity::class], version = 2)
+@Database(entities = [WeatherEntity::class], version = 4)
 abstract class WeatherDatabase: RoomDatabase(){
 
     abstract fun employeeDao():WeatherDao
