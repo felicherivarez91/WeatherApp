@@ -2,6 +2,7 @@ package com.example.weatherapplication
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -23,7 +24,7 @@ class MainActivity : AppCompatActivity() {
 
         binding?.btnCurrentLocation?.setOnClickListener {
             if (viewModel.isOnline()) {
-                Toast.makeText(this, "There is internet", Toast.LENGTH_LONG).show()
+              //  Toast.makeText(this, "There is internet", Toast.LENGTH_LONG).show()
                 viewModel.getCurrentLocationWeather(this)
                 setupUI()
             } else {
@@ -37,13 +38,8 @@ class MainActivity : AppCompatActivity() {
         // custom latitude and longitude from user
         binding?.btnCustomLocation?.setOnClickListener {
             if (viewModel.isOnline()) {
-                Toast.makeText(this, "There is internet", Toast.LENGTH_LONG).show()
-                if (!binding?.etLatitudeInput?.text.isNullOrEmpty() || !binding?.etLongitudeInput?.text.isNullOrEmpty()) {
-                    viewModel.getCustomLocationWeather(this,
-                        binding!!.etLatitudeInput.text.toString(),
-                        binding!!.etLongitudeInput.text.toString()
-                    )
-                } else {
+            //    Toast.makeText(this, "There is internet", Toast.LENGTH_LONG).show()
+                if (binding?.etLatitudeInput?.text.isNullOrEmpty() || binding?.etLongitudeInput?.text.isNullOrEmpty()) {
                     Toast.makeText(
                         this,
                         "Please input the missing value",
@@ -51,11 +47,36 @@ class MainActivity : AppCompatActivity() {
                     )
                         .show()
                 }
+                 if(binding?.etLatitudeInput?.text.toString().toDouble()<-90 || binding?.etLatitudeInput?.text.toString().toDouble() > 90) {
+                    Toast.makeText(
+                        this,
+                        "value of latitude must be between -90 to 90",
+                        Toast.LENGTH_LONG
+                    )
+                        .show()
+                }else if(binding?.etLongitudeInput?.text.toString().toDouble()<-180 || binding?.etLongitudeInput?.text.toString().toDouble() > 180) {
+                    Toast.makeText(
+                        this,
+                        "value of longitude must be between -180 to 180",
+                        Toast.LENGTH_LONG
+                    )
+                        .show()
+
+                } else {
+                    viewModel.getCustomLocationWeather(this,
+                        binding!!.etLatitudeInput.text.toString(),
+                        binding!!.etLongitudeInput.text.toString()
+                    )
+                    setupUI()
+
+                }
             } else {
                 Toast.makeText(this, "There is no internet", Toast.LENGTH_LONG).show()
                 viewModel.getWeatherFromDB()
+                setupUI()
+
             }
-            setupUI()
+
 
         }
 
@@ -75,16 +96,23 @@ class MainActivity : AppCompatActivity() {
     private fun addRecord() {
 
         lifecycleScope.launch {
-            if (viewModel.addRecordToDB()) {
-                Toast.makeText(applicationContext, "Record Saved", Toast.LENGTH_LONG)
-                    .show()
-            } else {
+            Log.d("saving to db scope", "Thread ${Thread.currentThread()}")
+
+            if (!viewModel.addRecordToDB()) {
                 Toast.makeText(
                     applicationContext,
                     "failed to save entry",
                     Toast.LENGTH_LONG
-                )
-                    .show()
+                ).show()
+        //        Toast.makeText(applicationContext, "Record Saved", Toast.LENGTH_LONG)
+        //            .show()
+       //     } else {
+        //        Toast.makeText(
+           //         applicationContext,
+          //          "failed to save entry",
+           //         Toast.LENGTH_LONG
+           //     )
+           //         .show()
             }
 
         }

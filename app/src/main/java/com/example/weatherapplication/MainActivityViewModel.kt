@@ -22,7 +22,9 @@ import com.example.weatherapplication.model.Data
 import com.example.weatherapplication.retrofit.ApiInterface
 import com.example.weatherapplication.retrofit.RetrofitClient
 import com.google.android.gms.location.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.util.*
 
@@ -53,14 +55,21 @@ class MainActivityViewModel( application: Application) :
 
         val retrofit = RetrofitClient().getClient()
         val apiInterface = retrofit.create(ApiInterface::class.java)
-        viewModelScope.launch {
+
+        viewModelScope.launch(Dispatchers.IO) {
             try {
 
                 val response = apiInterface.getWeather(latitude, longitude, true)
-                if (response.isSuccessful) {
-                    //your code for handling success response
+                Log.d("reponse api scope", "Thread ${Thread.currentThread()}")
 
-                    _weatherData.value = response.body()!!
+                if (response.isSuccessful) {
+
+                    //your code for handling success response
+                    withContext(Dispatchers.Main) {
+                        _weatherData.value = response.body()!!
+                        Log.d("weather assign scope", "Thread ${Thread.currentThread()}")
+
+                    }
 
                 } else {
 
@@ -87,7 +96,7 @@ class MainActivityViewModel( application: Application) :
         }
     }
 
-    fun getCustomLocationWeather(activity: Activity, latitude: String, longitude: String) {
+    fun getCustomLocationWeather(activity: Activity,latitude: String, longitude: String) {
         this.latitude = latitude
         this.longitude = longitude
         location = getLocation(latitude.toDouble(), longitude.toDouble())
@@ -102,7 +111,9 @@ class MainActivityViewModel( application: Application) :
     }
 
     fun getWeatherFromDB() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Main) {
+            Log.d(" get db  scope", "Thread ${Thread.currentThread()}")
+
             weatherDao.getLast().collect {
                 val lastRecord = it
                 latitude = lastRecord.latitude.toString()
@@ -114,8 +125,7 @@ class MainActivityViewModel( application: Application) :
                         temperature = lastRecord.temperature,
                         winddirection = lastRecord.winddirection,
                         windspeed = lastRecord.windspeed
-                    )//,
-               //     location = lastRecord.location
+                    )
                 )
                 _weatherData.value = weatherData
             }
@@ -127,6 +137,8 @@ class MainActivityViewModel( application: Application) :
         try {
             if (isOnline() || weatherData.value != null) {
                 viewModelScope.launch {
+                    Log.d("insert db scope", "Thread ${Thread.currentThread()}")
+
                     weatherDao.insert(
                         WeatherEntity(
                             latitude = weatherData.value!!.latitude,
@@ -154,39 +166,40 @@ class MainActivityViewModel( application: Application) :
 
     // checks if internet is connected
     fun isOnline(): Boolean {
-            val connectivityManager =
-                context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-            if (connectivityManager != null) {
-                val capabilities =
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
-                    } else {
-                        TODO("VERSION.SDK_INT < M")
-                    }
-                if (capabilities != null) {
-                    if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
-                        Log.i("Internet", "NetworkCapabilities.TRANSPORT_CELLULAR")
-                        status = true
-                        return status
-                    } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
-                        Log.i("Internet", "NetworkCapabilities.TRANSPORT_WIFI")
-                        status = true
-                        return status
-                    } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)) {
-                        Log.i("Internet", "NetworkCapabilities.TRANSPORT_ETHERNET")
-                        status = true
-                        return status
-                    }
+        Log.d("check internet scope", "Thread ${Thread.currentThread()}")
 
-                }
+        val connectivityManager =
+                context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val capabilities =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
+            } else {
+                TODO("VERSION.SDK_INT < M")
             }
+        if (capabilities != null) {
+            if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
+                Log.i("Internet", "NetworkCapabilities.TRANSPORT_CELLULAR")
+                status = true
+                return status
+            } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
+                Log.i("Internet", "NetworkCapabilities.TRANSPORT_WIFI")
+                status = true
+                return status
+            } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)) {
+                Log.i("Internet", "NetworkCapabilities.TRANSPORT_ETHERNET")
+                status = true
+                return status
+            }
+
+        }
             status = false
             return status
 
     }
 
-    fun getLocation(lat: Double, long: Double): String {
 
+    fun getLocation(lat: Double, long: Double): String {
+        location=""
         val geocoder = Geocoder(getApplication(), Locale.getDefault())
         try {
             val addresses = geocoder.getFromLocation(lat, long, 1)
@@ -198,6 +211,9 @@ class MainActivityViewModel( application: Application) :
         } catch (e: IOException) {
             // Handle IOException
             location = "Could not find location information for the provided coordinates"
+        }
+        if(location.isNullOrBlank()){
+       location = "Could not find location information for the provided coordinates"
         }
         return location
     }
